@@ -1,0 +1,81 @@
+# Build/output dirs
+output/
+work/
+simv.daidir/
+simv/
+csrc/
+DVEfiles/
+verdiLog/
+novas.conf
+novas.rc
+simulator/
+outputs/
+runs/
+
+# exec and bin
+simv
+simv*
+ucli.key
+vc_hdrs.h
+
+# logs
+*.log
+*.jou
+*.history
+*.key
+*.vpd
+*.vcd
+*.fsdb
+*.shm
+*.svf
+*.trn
+*.dsn
+*.diag
+*.out
+*.err
+*.report
+*.rpt
+.nfs*
+moduleparamid
+
+# coverage
+urgReport/
+cov_work/
+coverage/
+*.vdb
+*.ucdb
+
+# waveforms / debug
+inter.vpd
+dump.vcd
+waves.fsdb
+
+# tmps
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+.core
+core
+core.*
+
+# compilation
+AN.DB/
+alib-52/
+64/
+simv.cm/
+
+# make / compile
+*.o
+*.a
+*.so
+
+# editor
+.vscode/
+.idea/
+*.iml
+
+# so
+.DS_Store
+Thumbs.db
