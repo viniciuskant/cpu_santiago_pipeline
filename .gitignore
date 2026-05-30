@@ -14,6 +14,7 @@ runs/
 
 # exec and bin
 simv
+sim
 simv*
 ucli.key
 vc_hdrs.h
