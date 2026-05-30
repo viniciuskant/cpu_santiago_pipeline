@@ -16,7 +16,7 @@ module top #(
     output logic error
 );
 
-    // Sinais de pipeline
+    // sinais de pipeline
     logic [WIDTH-1:0] muxA_out, muxB_out;
     logic [WIDTH-1:0] regA_out, regB_out;
     logic [2*WIDTH-1:0] alu_out;
@@ -27,7 +27,7 @@ module top #(
     logic [1:0] in_select_a, in_select_b;
     logic [3:0] opcode;
 
-    // Sinais do controle
+    // sinais do controle
     logic memoryWrite, memoryRead;
     logic selmux2;
     logic aluout_reg_en;
@@ -36,7 +36,7 @@ module top #(
     logic nvalid_data;
     logic rst_out;
 
-    // Sinais para forwarding
+    // sinais para forwarding
     logic forwardA, forwardB; // seleciona entre reg_OUT e valor encaminhado
     logic [2*WIDTH-1:0] ex_result; // resultado do estágio EX
     logic ex_result_valid; // indica se o resultado do EX é válido
@@ -47,7 +47,7 @@ module top #(
 
     assign {dout_high, dout_low} = regCPU_OUT;
 
-    // Pipeline Stage 1: IF
+    // pipeline Stage 1: IF
     register_bank #(.WIDTH(7)) reg_IF_ID (
         .clk(clk),
         .rst(rst),
@@ -57,7 +57,7 @@ module top #(
     );
 
 
-    // Controle baseada na instrução IF)
+    //controle baseada na instrução IF)
     control u_control (
         .clk(clk),
         .rst(rst),
@@ -77,13 +77,13 @@ module top #(
         .opcode(opcode)
     );
 
-    // Lógica de Forwarding (resolve RAW hazard com feedback)
+    // lógica de forwarding (resolve RAW hazard com feedback)
     // forwardA e forwardB = 1 quando a instrução atual (ID) usa feedback (in_select_a == 2'b11)
     // e a instrução em EX produz um resultado válido.
     assign forwardA = (in_select_a == 2'b11) && ex_result_valid;
     assign forwardB = (in_select_b == 2'b11) && ex_result_valid;
 
-    // Estágio ID: Seleção dos operandos com forwarding
+    // estágio ID: Seleção dos operandos com forwarding
     logic [WIDTH-1:0] muxA_normal, muxB_normal;
 
     mux4 #(.WIDTH(WIDTH)) muxA (
@@ -104,12 +104,12 @@ module top #(
         .dout(muxB_normal)
     );
 
-    // Forwarding: se ativo, usa o resultado do EX; senão usa o valor normal
+    // se ativo, usa o resultado do EX; senão usa o valor normal
     logic [WIDTH-1:0] operandA, operandB;
     assign operandA = forwardA ? ex_result[2*WIDTH-1:WIDTH] : muxA_normal;
     assign operandB = forwardB ? ex_result[WIDTH-1:0] : muxB_normal;
 
-    // Pipeline Stage 2 -> 3: registradores ID/EX 
+    //pipeline Stage 2 -> 3: registradores ID/EX 
     register_bank #(.WIDTH(WIDTH)) reg_ID_EX_A (
         .clk(clk),
         .rst(rst),
@@ -154,7 +154,19 @@ module top #(
         end
     end
 
-    // Estágio EX: ALU, Memória e geração do resultado
+    logic [6:0]regCMD_ID;
+    register_bank #(.WIDTH(7)) reg_ID_EX (
+        .clk(clk),
+        .rst(rst),
+        .in(regCMD_IN),
+        .out(regCMD_ID),
+        .wr_en(datain_reg_en) // TODO: está sempre 1, implementar stall
+    );
+
+    logic instruction_alu;
+    assign instruction_alu = ~regCMD_ID[2];
+
+    // estágio EX: ALU, Memória e geração do resultado
     ALU #(.WIDTH(WIDTH)) u_alu (
         .in1(regA_out),
         .in2(regB_out),
@@ -182,7 +194,7 @@ module top #(
     // o resultado é considerado válido se aluout_reg_en_EX está ativo
     assign ex_result_valid = aluout_reg_en_EX;
 
-    // Registrador de saída (EX/WB)
+    // registrador de saída (EX/WB)
     register_bank #(.WIDTH(2*WIDTH)) reg_EX_WB (
         .clk(clk),
         .rst(rst),
@@ -191,11 +203,11 @@ module top #(
         .wr_en(aluout_reg_en_EX)
     );
 
-    // Registrador de flags (zero e error)
+    // registrador de flags (zero e error)
     register_bank #(.WIDTH(2)) reg_FLAG_OUT (
         .clk(clk),
         .rst(rst),
-        .in({zero_in, error_in}),
+        .in({(zero_in & instruction_alu), error_in}), // é necessário sem isso um load ou store pode gerar uma flag zero
         .out({zero, error}),
         .wr_en(aluout_reg_en_EX)
     );
