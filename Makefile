@@ -12,7 +12,7 @@ DC  = dc_shell
 TOP = top
 
 # TESTBENCH
-TB = top_tb_completo
+TB = top_tb
 TB_FILE = $(TB_DIR)/$(TB).sv
 
 # OUTPUTS

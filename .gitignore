@@ -13,6 +13,7 @@ outputs/
 runs/
 
 # exec and bin
+out
 simv
 sim
 simv*

@@ -20,7 +20,7 @@ module top #(
     logic [WIDTH-1:0] muxA_out, muxB_out;
     logic [WIDTH-1:0] regA_out, regB_out;
     logic [2*WIDTH-1:0] alu_out;
-    logic [2*WIDTH-1:0] mem_out;
+    logic [WIDTH-1:0] mem_out;
     logic [2*WIDTH-1:0] muxCPU_OUT;
     logic [2*WIDTH-1:0] regCPU_OUT;
 

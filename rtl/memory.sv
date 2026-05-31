@@ -8,10 +8,10 @@ module memory #(
     input [WIDTH-1:0] memoryWriteData,
     input [WIDTH_ADDRESS-1:0] memoryAddress,
 
-    output logic [2*WIDTH-1:0] memoryOutData
+    output logic [WIDTH-1:0] memoryOutData
 );
 
-    logic [2*WIDTH-1:0] mem [0:(1<<WIDTH_ADDRESS)-1];
+    logic [WIDTH-1:0] mem [0:(1<<WIDTH_ADDRESS)-1];
 
     always_ff @(posedge clk) begin
         if (memoryWrite) begin
